@@ -52,23 +52,30 @@
 
 ```mermaid
 graph LR
-    User -->|React UI| Frontend
-    Frontend -->|API analyze| Backend[FastAPI Backend]
+    User -->|1. Upload Image| Frontend
+    Frontend -->|2. POST /analyze| Backend[FastAPI Backend]
     
     subgraph AI_Engine
-        Backend -->|Image| UNet[U-Net Segmentation]
-        Backend -->|Image| DenseNet[DenseNet Classification]
-        Backend -->|Image| YOLO[YOLO Detection]
+        Backend -->|3. Invoke| Orchestrator
         
-        UNet --> Orchestrator
-        DenseNet --> Orchestrator
-        YOLO --> Orchestrator
+        Orchestrator -->|4. Request| Vision[Vision Engine]
         
-        Orchestrator -->|Context| LLM[Groq LLM<br/>Llama 3 3]
+        subgraph Vision_Models
+            Vision -->|5. Segment| UNet[U-Net]
+            Vision -->|6. Classify| DenseNet[DenseNet]
+            Vision -->|7. Detect| YOLO[YOLO]
+        end
+        
+        UNet -- 5b. Mask --> Orchestrator
+        DenseNet -- 6b. Pneumonia Prob --> Orchestrator
+        YOLO -- 7b. Bounding Boxes --> Orchestrator
+        
+        Orchestrator -->|8. Send Context| LLM[Groq LLM<br/>Llama 3.3]
     end
     
-    LLM -->|Text Report| Backend
-    Backend -->|JSON| Frontend
+    LLM -->|9. Generate Report| Orchestrator
+    Orchestrator -->|10. FinalResponseDTO| Backend
+    Backend -->|11. JSON Response| Frontend
 
 ```
 
