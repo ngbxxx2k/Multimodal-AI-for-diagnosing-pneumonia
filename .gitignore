@@ -54,15 +54,6 @@ frontend/dist/
 *.swp
 *.swo
 
-# OS specific
-.DS_Store
-Thumbs.db
 
-# AI Models (Optional - usually too large for git)
-# Uncomment if you want to exclude models
-# backend/model_ai/*.pt
-# backend/model_ai/*.pth
-# backend/model_ai/*.keras
-# backend/model_ai/*.onnx
-# However, for this project, checking if user wants to keep them tracked. 
-# Usually best practice to ignore large files.
+
+
