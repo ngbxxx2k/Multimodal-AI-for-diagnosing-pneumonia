@@ -7,7 +7,6 @@
 ![PyTorch](https://img.shields.io/badge/PyTorch-EE4C2C?style=for-the-badge&logo=pytorch&logoColor=white)
 ![Groq](https://img.shields.io/badge/Groq(Llama3)-F55036?style=for-the-badge&logo=pytorch&logoColor=white)
 ![TailwindCSS](https://img.shields.io/badge/TailwindCSS-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)
-![University](https://img.shields.io/badge/Nam%20Can%20Tho%20University-red?style=for-the-badge)
 
 ---
 
@@ -121,8 +120,6 @@ Tạo file `.env` trong thư mục `backend/` dựa trên mẫu bên dưới. **
 GROQ_API_KEY=gsk_your_groq_api_key_here
 PORT=8000
 HOST=0.0.0.0
-# Model Paths (Optional - use defaults if models are in model_ai/)
-# UNET_PATH=path/to/unet.pth
 ```
 
 **Chạy Server:**
