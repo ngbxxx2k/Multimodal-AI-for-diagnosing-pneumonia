@@ -1,0 +1,68 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Environment Variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env.production
+backend/.env
+
+# Node.js / Frontend
+node_modules/
+frontend/node_modules/
+jspm_packages/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.npm
+dist/
+frontend/dist/
+.cache
+.parcel-cache
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS specific
+.DS_Store
+Thumbs.db
+
+# AI Models (Optional - usually too large for git)
+# Uncomment if you want to exclude models
+# backend/model_ai/*.pt
+# backend/model_ai/*.pth
+# backend/model_ai/*.keras
+# backend/model_ai/*.onnx
+# However, for this project, checking if user wants to keep them tracked. 
+# Usually best practice to ignore large files.

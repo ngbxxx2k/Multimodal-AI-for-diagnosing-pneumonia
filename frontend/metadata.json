@@ -1,0 +1,6 @@
+
+{
+  "name": "PneumoScan AI - Radiology Assist",
+  "description": "An AI-powered diagnostic dashboard for pneumonia detection and radiology report generation.",
+  "requestFramePermissions": ["camera"]
+}

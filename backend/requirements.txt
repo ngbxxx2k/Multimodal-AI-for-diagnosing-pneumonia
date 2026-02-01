@@ -1,0 +1,14 @@
+torch
+torchvision
+numpy
+opencv-python
+pillow
+ultralytics
+tensorflow
+keras
+segmentation-models-pytorch
+fastapi
+uvicorn
+python-multipart
+python-dotenv
+groq
