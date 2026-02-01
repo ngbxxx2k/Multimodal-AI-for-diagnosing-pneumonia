@@ -1,6 +1,6 @@
 # 🫁 Multimodal AI - Trợ Lý Chẩn Đoán Hình Ảnh (PneumoScan AI)
 
-> Ứng dụng AI y tế tiên tiến kết hợp Computer Vision và Large Language Models (LLM) để hỗ trợ bác sĩ chẩn đoán viêm phổi chính xác từ ảnh X-quang và dữ liệu lâm sàng.
+> Ứng dụng AI y tế tiên tiến kết hợp Computer Vision và Large Language Models (LLM) để hỗ trợ bác sĩ chẩn đoán viêm phổi từ ảnh X-quang và dữ liệu lâm sàng.
 
 ![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
 ![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white)
@@ -23,10 +23,12 @@
 
 ## 📖 Giới Thiệu Dự Án
 
-**PneumoScan AI** là một hệ thống hỗ trợ quyết định lâm sàng (CDSS) thế hệ mới. Không giống như các hệ thống AI truyền thống chỉ dựa vào hình ảnh, PneumoScan AI thực hiện **phân tích đa phương thức (multimodal)**:
+**PneumoScan AI** là một hệ thống hỗ trợ quyết định lâm sàng, được thiết kế theo kiến trúc phân tích đa phương thức (multimodal).
 
-1.  **Thị giác máy tính**: Xác định vị trí tổn thương và tính toán xác suất viêm phổi.
-2.  **Lập luận y khoa**: Tổng hợp dữ liệu bệnh nhân (xét nghiệm máu, sinh hiệu) cùng kết quả phân tích ảnh để đưa ra chẩn đoán và khuyến nghị như một chuyên gia y tế thực thụ.
+**Thành phần thị giác máy tính** sử dụng các mô hình học sâu để phát hiện và định vị các vùng bất thường trên ảnh X-quang ngực, đồng thời trích xuất đặc trưng hình ảnh phục vụ cho quá trình phân tích tiếp theo. Các mô hình này không đưa ra chẩn đoán bệnh danh mà chỉ cung cấp thông tin định vị và đặc trưng hình ảnh.
+
+**Thành phần lập luận y khoa** tổng hợp các đặc trưng hình ảnh cùng dữ liệu lâm sàng của bệnh nhân (xét nghiệm máu, sinh hiệu) nhằm hỗ trợ bác sĩ trong việc đánh giá nguy cơ, phân tầng mức độ và định hướng xử trí. Hệ thống không thay thế bác sĩ mà đóng vai trò hỗ trợ ra quyết định dựa trên dữ liệu hiện có.
+
 
 ---
 
