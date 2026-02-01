@@ -7,6 +7,7 @@
 ![PyTorch](https://img.shields.io/badge/PyTorch-EE4C2C?style=for-the-badge&logo=pytorch&logoColor=white)
 ![Groq](https://img.shields.io/badge/Groq(Llama3)-F55036?style=for-the-badge&logo=pytorch&logoColor=white)
 ![TailwindCSS](https://img.shields.io/badge/TailwindCSS-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)
+![University](https://img.shields.io/badge/Nam%20Can%20Tho%20University-red?style=for-the-badge)
 
 ---
 
