@@ -53,19 +53,23 @@
 ```mermaid
 graph LR
     User -->|React UI| Frontend
-    Frontend -->|API /analyze| Backend[FastAPI Backend]
+    Frontend -->|API analyze| Backend[FastAPI Backend]
     
-    subgraph AI Engine
+    subgraph AI_Engine
         Backend -->|Image| UNet[U-Net Segmentation]
         Backend -->|Image| DenseNet[DenseNet Classification]
         Backend -->|Image| YOLO[YOLO Detection]
         
-        UNet & DenseNet & YOLO -->|Raw Findings| Orchestrator
-        Orchestrator -->|Context| LLM[Groq LLM (Llama 3.3)]
+        UNet --> Orchestrator
+        DenseNet --> Orchestrator
+        YOLO --> Orchestrator
+        
+        Orchestrator -->|Context| LLM[Groq LLM<br/>Llama 3 3]
     end
     
     LLM -->|Text Report| Backend
-    Backend -->|JSON Format| Frontend
+    Backend -->|JSON| Frontend
+
 ```
 
 ---
