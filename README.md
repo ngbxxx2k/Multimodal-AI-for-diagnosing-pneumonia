@@ -1,4 +1,4 @@
-<div align="center">"center">
+<div align="center">
 
 # 🫁 PneumoScan AI — Hệ Thống Trợ Lý Chẩn Đoán Hình Ảnh Y Tế Đa Phương Thức
 
@@ -791,4 +791,4 @@ Nhấn nút **"PHÂN TÍCH & CHẨN ĐOÁN"**. Hệ thống sẽ tự động:
 *Hệ thống này chỉ mang tính chất hỗ trợ. Mọi quyết định lâm sàng cuối cùng đều thuộc về bác sĩ điều trị.*
 
 </div>
-]]>
+
