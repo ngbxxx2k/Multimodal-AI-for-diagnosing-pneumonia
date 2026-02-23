@@ -238,9 +238,9 @@ Multimodal_AI/
 │   │   └── 📄 response_helper.py         # Format response JSON cho Frontend
 │   │
 │   └── 🗂️ model_ai/                      # ===== PRE-TRAINED MODEL FILES =====
-│       ├── 📄 best_lung_unet.pth         # Trọng số U-Net (~97MB)
-│       ├── 📄 best_binary_xray_recall98.keras  # Trọng số DenseNet121 (~32MB)
-│       └── 📄 best_RSNA_HIGH_LR.pt       # Trọng số YOLOv8 (~52MB)
+│       ├── 📄 best_lung_unet.pth         # U-Net
+│       ├── 📄 best_binary_xray_recall98.keras  # DenseNet121 
+│       └── 📄 best_RSNA_HIGH_LR.pt       # YOLOv8 
 │
 └── 🎨 frontend/                           # ===== FRONTEND (React + TypeScript) =====
     ├── 📄 index.html                      # HTML entry point (TailwindCSS CDN, Google Fonts, Import Map)
