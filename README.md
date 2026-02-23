@@ -1,4 +1,4 @@
-<![CDATA[<div align="center">
+<div align="center">"center">
 
 # 🫁 PneumoScan AI — Hệ Thống Trợ Lý Chẩn Đoán Hình Ảnh Y Tế Đa Phương Thức
 
