@@ -106,7 +106,7 @@ const ResultsPanel: React.FC<Props> = ({ result, appState }) => {
               <div className="text-right border-l border-slate-100 pl-6">
                 <p className="text-[10px] text-slate-400 uppercase font-bold tracking-widest mb-1">Độ tin cậy</p>
                 <p className="text-3xl font-black text-sky-500">
-                  {result?.confidence !== undefined ? Number(result.confidence).toFixed(1) : '--'}%
+                  {result?.confidence !== undefined ? Number(result.confidence).toFixed(2) : '--'}%
                 </p>
               </div>
             </div>

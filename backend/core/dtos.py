@@ -21,12 +21,10 @@ class PatientDataDTO:
 class AnalysisResultDTO:
     unet_status: str  
     densenet_prob: float
-    yolo_detections: List[Any]  
     annotated_image: Any 
     curb65_score: int
     curb65_type: str 
     lung_mask: Optional[Any] = None 
-    location_text: str = "" 
 
 @dataclass
 class FinalResponseDTO:

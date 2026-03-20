@@ -6,15 +6,29 @@ class ChiefDoctorAgent:
     def __init__(self):
         self.client = LLMClient()
 
-    def conclude(self, radiology_report: str, lab_report: str, doctor_note: str) -> str:
+    def conclude(self, patient_data, densenet_prob, curb_score, curb_type) -> str:
         """
-        Tổng hợp các báo cáo thành một báo cáo y tế markdown cuối cùng.
+        Tổng hợp các thông tin y khoa để đưa ra chẩn đoán và hướng xử trí cuối cùng.
         """
         input_data = {
-            "radiology_report": radiology_report,
-            "lab_report": lab_report,
-            "doctor_note": doctor_note
+            "densenet_prob": round(densenet_prob, 2),
+            "curb_score": curb_score,
+            "curb_type": curb_type,
+            "patient_info": {
+                "age": patient_data.age,
+                "gender": patient_data.gender,
+                "confusion": patient_data.confusion,
+                "urea": patient_data.urea,
+                "respiratory_rate": patient_data.respiratory_rate,
+                "bp_systolic": patient_data.bp_systolic,
+                "bp_diastolic": patient_data.bp_diastolic,
+                "wbc": patient_data.wbc,
+                "crp": patient_data.crp,
+                "spo2": patient_data.spo2,
+                "temperature": patient_data.temperature,
+                "doctor_note": patient_data.doctor_note
+            }
         }
         
-        input_json = json.dumps(input_data, indent=2)
+        input_json = json.dumps(input_data, indent=2, ensure_ascii=False)
         return self.client.generate_text(CHIEF_DOCTOR_SYSTEM_PROMPT, input_json)

@@ -1,6 +1,4 @@
 from ai_engine.vision_models import VisionEngine
-from ai_engine.agents.radiologist import RadiologistAgent
-from ai_engine.agents.lab_specialist import LabSpecialistAgent
 from ai_engine.agents.chief_doctor import ChiefDoctorAgent
 
 from core.dtos import PatientDataDTO, AnalysisResultDTO, FinalResponseDTO
@@ -15,8 +13,6 @@ import cv2
 class MedicalOrchestrator:
     def __init__(self):
         self.vision = VisionEngine()
-        self.radiologist = RadiologistAgent()
-        self.lab_specialist = LabSpecialistAgent()
         self.chief = ChiefDoctorAgent()
 
     def analyze_patient(self, patient_data: PatientDataDTO) -> FinalResponseDTO:
@@ -45,64 +41,31 @@ class MedicalOrchestrator:
 
         pneumonia_prob = self.vision.predict_pneumonia_prob(processed_image)
 
-        if pneumonia_prob > 80:
-            yolo_conf = 0.10
-        else:
-            yolo_conf = 0.25
-            
-        _, detections = self.vision.detect_abnormalities(original_image, conf_threshold=yolo_conf)
-        
-        from utils.image_processing import get_lesion_location_text
-        
-        overlay = cv2.cvtColor(np.array(original_image), cv2.COLOR_RGB2BGR)
-        
-        if mask is not None:
-             colored_mask = np.zeros_like(overlay)
-             colored_mask[:, :, 1] = mask * 100 
-             overlay = cv2.addWeighted(overlay, 1.0, colored_mask, 0.3, 0)
+        overlay = cv2.cvtColor(np.array(processed_image), cv2.COLOR_RGB2BGR)
 
-        primary_location = "Không xác định"
-        locations_found = []
-
-        for det in detections:
-            box = det['box'] 
-            conf = det['conf']
-            mode = det['mode']
-            
-            x1, y1, x2, y2 = map(int, box)
-            location_text = get_lesion_location_text([x1, y1, x2, y2], mask)
-            locations_found.append(location_text)
-            
-            color = (0, 255, 0) if "High" in mode else (0, 255, 255) 
-            cv2.rectangle(overlay, (x1, y1), (x2, y2), color, 2)
-            
-            label = f"{conf:.2f}"
-            (w_text, h_text), _ = cv2.getTextSize(label, cv2.FONT_HERSHEY_SIMPLEX, 0.5, 1)
-            cv2.rectangle(overlay, (x1, y1 - 20), (x1 + w_text, y1), color, -1)
-            cv2.putText(overlay, label, (x1, y1 - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,0,0), 1)
+        try:
+            heatmap = self.vision.generate_gradcam_heatmap(processed_image)
+            if heatmap is not None:
+                heatmap_resized = cv2.resize(heatmap, (processed_image.size[0], processed_image.size[1]))
+                heatmap_uint8 = np.uint8(255 * heatmap_resized)
+                colored_heatmap = cv2.applyColorMap(heatmap_uint8, cv2.COLORMAP_JET)
+                
+                alpha = 0.4
+                # Apply full Grad-CAM heatmap over image
+                overlay = cv2.addWeighted(overlay, 1 - alpha, colored_heatmap, alpha, 0)
+        except Exception as e:
+            print(f"GradCAM Error: {e}")
 
         annotated_img_pil = Image.fromarray(cv2.cvtColor(overlay, cv2.COLOR_BGR2RGB))
         
-        if locations_found:
-            primary_location = locations_found[0] 
-            
-        enriched_detections = []
-        for i, det in enumerate(detections):
-            loc = locations_found[i] if i < len(locations_found) else "Không xác định"
-            enriched_detections.append({**det, "label": f"{det['label']} at {loc}"})
-            
-        rad_report = self.radiologist.analyze(pneumonia_prob, enriched_detections)
-        
         curb_score, curb_type = calculate_curb65(patient_data)
-        lab_report = self.lab_specialist.analyze(patient_data, curb_score, curb_type)
         
-        final_markdown = self.chief.conclude(rad_report, lab_report, patient_data.doctor_note)
+        final_markdown = self.chief.conclude(patient_data, pneumonia_prob, curb_score, curb_type)
         
         response = FinalResponseDTO(
             annotated_image=annotated_img_pil,
             report_markdown=final_markdown
         )
-        response.location_text = primary_location
         response.pneumonia_prob = pneumonia_prob
         
         return response

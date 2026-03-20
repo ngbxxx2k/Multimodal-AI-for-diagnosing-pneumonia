@@ -2,12 +2,12 @@
 
 # 🫁 PneumoScan AI — Hệ Thống Trợ Lý Chẩn Đoán Hình Ảnh Y Tế Đa Phương Thức
 
-> **Ứng dụng Trí tuệ Nhân tạo kết hợp Computer Vision và Large Language Models (LLM) để hỗ trợ bác sĩ chẩn đoán viêm phổi từ ảnh X-quang ngực và dữ liệu lâm sàng.**
+> **Ứng dụng Trí tuệ Nhân tạo kết hợp Computer Vision (U-Net Segmentation, DenseNet121 Classification, Grad-CAM Visualization) và Large Language Model (LLM) để hỗ trợ bác sĩ chẩn đoán viêm phổi từ ảnh X-quang ngực và dữ liệu lâm sàng.**
 
 ![React](https://img.shields.io/badge/React_19-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
 ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
 ![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white)
-![TailwindCSS](https://img.shields.io/badge/TailwindCSS-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)
+![TailwindCSS](https://img.shields.io/badge/TailwindCSS_(CDN)-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)
 ![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white)
 ![PyTorch](https://img.shields.io/badge/PyTorch-EE4C2C?style=for-the-badge&logo=pytorch&logoColor=white)
 ![TensorFlow](https://img.shields.io/badge/TensorFlow-FF6F00?style=for-the-badge&logo=tensorflow&logoColor=white)
@@ -22,7 +22,7 @@
 | # | Mục | Mô tả |
 |---|-----|--------|
 | 1 | [Giới Thiệu Tổng Quan](#1--giới-thiệu-tổng-quan) | Bối cảnh bài toán, mục tiêu và phạm vi dự án |
-| 2 | [Kiến Trúc Hệ Thống](#2-%EF%B8%8F-kiến-trúc-hệ-thống) | Sơ đồ kiến trúc tổng thể, luồng dữ liệu và mô hình Multi-Agent |
+| 2 | [Kiến Trúc Hệ Thống](#2-%EF%B8%8F-kiến-trúc-hệ-thống) | Sơ đồ kiến trúc tổng thể và luồng dữ liệu |
 | 3 | [Công Nghệ Sử Dụng](#3--công-nghệ-sử-dụng) | Tech Stack chi tiết cho Frontend, Backend và AI Engine |
 | 4 | [Cấu Trúc Thư Mục](#4--cấu-trúc-thư-mục) | Sơ đồ cây thư mục và giải thích chức năng |
 | 5 | [Phân Tích Module Chức Năng](#5--phân-tích-các-module-chức-năng) | Đặc tả kỹ thuật chi tiết từng module |
@@ -42,8 +42,9 @@ Viêm phổi là một trong những nguyên nhân gây tử vong hàng đầu t
 
 **PneumoScan AI** được thiết kế nhằm:
 
-- **Hỗ trợ bác sĩ** trong việc phát hiện và định vị tổn thương viêm phổi trên ảnh X-quang ngực, **không thay thế** quy trình chẩn đoán y khoa truyền thống.
+- **Hỗ trợ bác sĩ** trong việc phát hiện viêm phổi trên ảnh X-quang ngực, **không thay thế** quy trình chẩn đoán y khoa truyền thống.
 - **Phân tích đa phương thức (Multimodal Analysis)**: Kết hợp dữ liệu hình ảnh (X-quang) với dữ liệu lâm sàng (sinh hiệu, xét nghiệm máu) để đưa ra đánh giá toàn diện.
+- **Trực quan hóa vùng nghi ngờ bằng Grad-CAM**: Tạo bản đồ nhiệt (heatmap) hiển thị vùng ảnh mà mô hình AI tập trung phân tích, giúp bác sĩ hiểu quyết định của AI.
 - **Tự động hóa tính điểm CURB-65/CRB-65**: Hỗ trợ phân tầng mức độ nghiêm trọng và đưa ra định hướng xử trí (Ngoại trú / Nhập viện).
 - **Sinh báo cáo y khoa tự động** bằng Mô hình Ngôn ngữ Lớn (LLM), tuân thủ định dạng chuyên ngành.
 
@@ -51,9 +52,9 @@ Viêm phổi là một trong những nguyên nhân gây tử vong hàng đầu t
 
 | Thành phần | Mô tả |
 |---|---|
-| **Phân Loại (Classification)** | Xác định xác suất viêm phổi từ ảnh X-quang bằng DenseNet121 |
 | **Phân Vùng (Segmentation)** | Tách vùng phổi khỏi cấu trúc xương/mô mềm bằng U-Net (ResNet34 backbone) |
-| **Phát Hiện (Object Detection)** | Khoanh vùng (Bounding Box) các đám mờ bất thường bằng YOLOv8 |
+| **Phân Loại (Classification)** | Xác định xác suất viêm phổi từ ảnh X-quang bằng DenseNet121 |
+| **Trực Quan Hóa (Grad-CAM)** | Tạo bản đồ nhiệt (heatmap) trên DenseNet121 để hiển thị vùng ảnh AI quan tâm |
 | **Lập Luận Y Khoa (Reasoning)** | Tổng hợp kết quả và sinh báo cáo bằng LLM Llama 3.3 70B (Groq Cloud) |
 | **Đánh Giá Rủi Ro** | Tự động tính điểm CURB-65 / CRB-65, phân tầng nguy cơ |
 
@@ -66,7 +67,7 @@ Viêm phổi là một trong những nguyên nhân gây tử vong hàng đầu t
 Hệ thống được thiết kế theo mô hình **Client-Server**, trong đó:
 - **Frontend (React + Vite)**: Giao diện nhập liệu và hiển thị kết quả.
 - **Backend (FastAPI)**: API Gateway, điều phối AI Engine, xử lý logic nghiệp vụ.
-- **AI Engine**: Bao gồm Vision Models Pipeline và Multi-Agent LLM System.
+- **AI Engine**: Bao gồm Vision Models Pipeline (U-Net + DenseNet121 + Grad-CAM) và LLM Agent (ChiefDoctorAgent).
 
 ```mermaid
 graph LR
@@ -79,24 +80,21 @@ graph LR
         subgraph Vision_Pipeline["🔬 Vision Engine Pipeline"]
             Orchestrator -->|4a. Segment| UNet["U-Net<br/>(ResNet34)"]
             Orchestrator -->|4b. Classify| DenseNet["DenseNet121<br/>(Keras)"]
-            Orchestrator -->|4c. Detect| YOLO["YOLOv8<br/>(Ultralytics)"]
+            Orchestrator -->|4c. Visualize| GradCAM["Grad-CAM<br/>(Heatmap)"]
         end
 
-        subgraph Agent_System["🤖 Multi-Agent LLM System"]
-            Orchestrator -->|5a. Imaging Data| Radiologist["🩻 RadiologistAgent"]
-            Orchestrator -->|5b. Lab Data + CURB-65| LabSpecialist["🧪 LabSpecialistAgent"]
-            Radiologist -->|6a. Rad Report| ChiefDoctor["👨‍⚕️ ChiefDoctorAgent"]
-            LabSpecialist -->|6b. Lab Report| ChiefDoctor
+        subgraph Agent_System["🤖 LLM Agent System"]
+            Orchestrator -->|5. All Data + CURB-65| ChiefDoctor["👨‍⚕️ ChiefDoctorAgent"]
         end
     end
 
     UNet -- Lung Mask --> Orchestrator
     DenseNet -- Pneumonia Probability --> Orchestrator
-    YOLO -- Bounding Boxes --> Orchestrator
+    GradCAM -- Attention Heatmap --> Orchestrator
 
-    ChiefDoctor -->|7. Final Markdown Report| Orchestrator
-    Orchestrator -->|8. FinalResponseDTO| Backend
-    Backend -->|9. JSON Response| Frontend
+    ChiefDoctor -->|6. Final Markdown Report| Orchestrator
+    Orchestrator -->|7. FinalResponseDTO| Backend
+    Backend -->|8. JSON Response| Frontend
 ```
 
 ### 2.2. Luồng Xử Lý Dữ Liệu (Data Flow)
@@ -124,41 +122,36 @@ Dưới đây là luồng xử lý chi tiết khi người dùng thực hiện m
 │       ├── [4b] DenseNet121: predict_pneumonia_prob(processed_image)     │
 │       │    └── Output: float (0-100%)                                  │
 │       │                                                                 │
-│       ├── [4c] YOLOv8: detect_abnormalities(original_image)            │
-│       │    ├── conf_threshold động: >80% → 0.10, ≤80% → 0.25          │
-│       │    └── Output: List[{box, conf, label, mode}]                  │
+│       ├── [4c] Grad-CAM: generate_gradcam_heatmap(processed_image)     │
+│       │    ├── Trích xuất feature maps từ lớp conv cuối DenseNet121    │
+│       │    ├── Tính gradient → Tạo heatmap attention                   │
+│       │    └── Overlay heatmap (JET colormap, alpha=0.4) lên ảnh gốc  │
 │       │                                                                 │
-│       ├── [5] Xác định vị trí giải phẫu (get_lesion_location_text)     │
-│       │    └── Bounding Box + Lung Mask → "Phổi Phải - Thùy Dưới"     │
+│       ├── [5] Tính điểm CURB-65/CRB-65 từ dữ liệu lâm sàng           │
 │       │                                                                 │
-│       ├── [6] Vẽ overlay: mask (xanh lá) + bounding boxes lên ảnh     │
-│       │                                                                 │
-│       ├── [7a] RadiologistAgent.analyze(prob, enriched_detections)      │
-│       ├── [7b] LabSpecialistAgent.analyze(patient_data, CURB-65)       │
-│       └── [7c] ChiefDoctorAgent.conclude(rad_report, lab_report)       │
+│       └── [6] ChiefDoctorAgent.conclude(patient_data, prob, curb)      │
+│            └── Gửi JSON tổng hợp cho LLM → Nhận Markdown Report       │
 │                                                                         │
-│  [8] format_ui_response() → JSON Response gửi về Frontend              │
+│  [7] format_ui_response() → JSON Response gửi về Frontend              │
 │       │                                                                 │
-│  [9] Frontend render: Ảnh annotated + Báo cáo Markdown                 │
+│  [8] Frontend render: Ảnh annotated (Grad-CAM) + Báo cáo Markdown     │
 │                                                                         │
 └─────────────────────────────────────────────────────────────────────────┘
 ```
 
-### 2.3. Mô Hình Multi-Agent (Agent-Based Architecture)
+### 2.3. ChiefDoctorAgent — LLM Agent
 
-Hệ thống LLM được thiết kế theo mô hình **Multi-Agent**, trong đó mỗi Agent đảm nhận một vai trò chuyên biệt và tuân thủ nghiêm ngặt hệ thống **Prompt Engineering** với các ràng buộc khóa cứng:
+Hệ thống LLM sử dụng một **Agent duy nhất** (`ChiefDoctorAgent`) đóng vai trò Bác sĩ Trưởng khoa Hô hấp, chịu trách nhiệm tổng hợp toàn bộ dữ liệu và đưa ra báo cáo y khoa cuối cùng:
 
 | Agent | Vai trò | Đầu vào | Đầu ra | Mô hình LLM |
 |---|---|---|---|---|
-| `RadiologistAgent` | Bác sĩ Chẩn đoán Hình ảnh | DenseNet probability, YOLO detections (enriched) | Mô tả vị trí tổn thương (Hình ảnh học) | Llama 3.3 70B |
-| `LabSpecialistAgent` | Chuyên gia Xét nghiệm Lâm sàng | PatientDataDTO, CURB-65 (calculated) | Bảng đánh giá chỉ số xét nghiệm | Llama 3.3 70B |
-| `ChiefDoctorAgent` | Trưởng khoa Hô hấp | Radiology Report, Lab Report, Doctor Note | Báo cáo Hội chẩn tổng hợp (Markdown) | Llama 3.3 70B |
+| `ChiefDoctorAgent` | Bác sĩ Trưởng khoa Hô hấp | DenseNet probability, CURB-65 score, toàn bộ dữ liệu lâm sàng (JSON) | Báo cáo y khoa tổng hợp (Markdown) | Llama 3.3 70B |
 
 **Đặc điểm thiết kế Prompt:**
-- **Khóa cứng output format**: Mỗi Agent chỉ được phép sử dụng các thuật ngữ và cấu trúc được định nghĩa sẵn trong System Prompt.
-- **Nguyên tắc không suy luận**: `RadiologistAgent` chỉ mô tả vị trí dựa trên dữ liệu định vị, **tuyệt đối không** đưa ra chẩn đoán bệnh danh.
-- **Tin tưởng tuyệt đối giá trị backend**: `LabSpecialistAgent` sử dụng điểm CURB-65 đã được tính toán bởi hàm `calculate_curb65()`, không tự tính lại.
-- **Tổng hợp không chỉnh sửa**: `ChiefDoctorAgent` chỉ tổng hợp, không chỉnh sửa nội dung báo cáo từ các Agent thành phần.
+- **Khóa cứng output format**: Agent chỉ được phép sử dụng định dạng Markdown được định nghĩa sẵn trong System Prompt (3 mục: Phân tích Lâm sàng, Nhận định tổng hợp, Giải thích chuyên môn).
+- **Nguyên tắc không suy luận ngoài dữ liệu**: Agent chỉ suy luận dựa trên dữ liệu JSON được cung cấp, **tuyệt đối không** tự tạo thêm dữ liệu y tế hoặc suy đoán triệu chứng mới.
+- **Tin tưởng tuyệt đối giá trị backend**: Sử dụng điểm CURB-65 đã được tính toán bởi hàm `calculate_curb65()`, không tự tính lại.
+- **Quy tắc đánh giá CURB**: 0–1 → Nguy cơ Thấp; 2 → Nguy cơ Trung bình; ≥3 → Nguy cơ Cao.
 
 ---
 
@@ -184,10 +177,9 @@ Hệ thống LLM được thiết kế theo mô hình **Multi-Agent**, trong đ�
 | **FastAPI** | Python web framework hiệu năng cao, hỗ trợ async |
 | **Uvicorn** | ASGI Server chạy ứng dụng FastAPI |
 | **PyTorch** | Framework Deep Learning, chạy U-Net (Segmentation) |
-| **TensorFlow / Keras** | Framework chạy DenseNet121 (Classification) |
-| **Ultralytics (YOLOv8)** | Thư viện Object Detection |
+| **TensorFlow / Keras** | Framework chạy DenseNet121 (Classification) + Grad-CAM |
 | **Segmentation Models PyTorch (SMP)** | Thư viện Segmentation, cung cấp kiến trúc U-Net + ResNet34 encoder |
-| **OpenCV (cv2)** | Xử lý ảnh: vẽ Bounding Box, overlay mask, resize |
+| **OpenCV (cv2)** | Xử lý ảnh: overlay Grad-CAM heatmap, resize, chuyển đổi màu |
 | **Pillow (PIL)** | Xử lý ảnh I/O, chuyển đổi định dạng |
 | **NumPy** | Tính toán ma trận, xử lý tensor |
 | **Groq SDK** | Client gọi API Groq Cloud để sử dụng LLM Llama 3.3 70B |
@@ -199,8 +191,7 @@ Hệ thống LLM được thiết kế theo mô hình **Multi-Agent**, trong đ�
 | Mô hình | Kiến trúc | Kích thước File | Nhiệm vụ | Đầu vào | Đầu ra |
 |---|---|---|---|---|---|
 | `best_lung_unet.pth` | U-Net (ResNet34 encoder) | ~97 MB | Phân vùng phổi (Lung Segmentation) | Ảnh RGB 256×256 | Binary Mask 256×256 |
-| `best_binary_xray_recall98.keras` | DenseNet121 | ~32 MB | Phân loại Viêm phổi (Binary Classification) | Ảnh RGB 224×224 | Xác suất [0, 1] |
-| `best_RSNA_HIGH_LR.pt` | YOLOv8 | ~52 MB | Phát hiện đám mờ (Opacity Detection) | Ảnh gốc | List[BoundingBox] |
+| `best_binary_xray_recall98.keras` | DenseNet121 | ~32 MB | Phân loại Viêm phổi (Binary Classification) + Grad-CAM | Ảnh RGB 224×224 | Xác suất [0, 1] + Heatmap |
 
 ---
 
@@ -220,27 +211,24 @@ Multimodal_AI/
 │   │
 │   ├── 🧠 ai_engine/                     # ===== CORE AI ENGINE =====
 │   │   ├── 📄 orchestrator.py            # 🎯 Trung tâm điều phối: Gọi Vision → Agent → Response
-│   │   ├── 📄 vision_models.py           # Lớp VisionEngine: Load & chạy 3 model AI (U-Net, DenseNet, YOLO)
+│   │   ├── 📄 vision_models.py           # Lớp VisionEngine: Load & chạy U-Net, DenseNet121, Grad-CAM
 │   │   ├── 📄 llm_client.py             # Client gọi Groq Cloud API (Llama 3.3 70B)
-│   │   ├── 📄 prompts.py                # System Prompts cho 3 Agent (Khóa cứng, tiếng Việt)
+│   │   ├── 📄 prompts.py                # System Prompt cho ChiefDoctorAgent (Khóa cứng, tiếng Việt)
 │   │   │
-│   │   └── 🤖 agents/                    # ===== HỆ THỐNG MULTI-AGENT =====
-│   │       ├── 📄 radiologist.py         # Agent: Bác sĩ Chẩn đoán Hình ảnh
-│   │       ├── 📄 lab_specialist.py      # Agent: Chuyên gia Xét nghiệm Lâm sàng
-│   │       └── 📄 chief_doctor.py        # Agent: Trưởng khoa Hô hấp (tổng hợp)
+│   │   └── 🤖 agents/                    # ===== LLM AGENT =====
+│   │       └── 📄 chief_doctor.py        # Agent: Bác sĩ Trưởng khoa Hô hấp (tổng hợp & chẩn đoán)
 │   │
 │   ├── 📦 core/                           # ===== DOMAIN LOGIC =====
 │   │   ├── 📄 dtos.py                    # Data Transfer Objects (PatientDataDTO, FinalResponseDTO,...)
 │   │   └── 📄 medical_calc.py            # Hàm tính điểm CURB-65 / CRB-65
 │   │
 │   ├── 🔧 utils/                          # ===== TIỆN ÍCH =====
-│   │   ├── 📄 image_processing.py        # Xử lý ảnh: crop, mask analysis, vẽ BB, xác định vị trí giải phẫu
+│   │   ├── 📄 image_processing.py        # Xử lý ảnh: crop, mask analysis, tiện ích bounding box
 │   │   └── 📄 response_helper.py         # Format response JSON cho Frontend
 │   │
 │   └── 🗂️ model_ai/                      # ===== PRE-TRAINED MODEL FILES =====
-│       ├── 📄 best_lung_unet.pth         # U-Net
-│       ├── 📄 best_binary_xray_recall98.keras  # DenseNet121 
-│       └── 📄 best_RSNA_HIGH_LR.pt       # YOLOv8 
+│       ├── 📄 best_lung_unet.pth         # U-Net (Segmentation)
+│       └── 📄 best_binary_xray_recall98.keras  # DenseNet121 (Classification + Grad-CAM)
 │
 └── 🎨 frontend/                           # ===== FRONTEND (React + TypeScript) =====
     ├── 📄 index.html                      # HTML entry point (TailwindCSS CDN, Google Fonts, Import Map)
@@ -255,7 +243,7 @@ Multimodal_AI/
     ├── 📦 components/                     # ===== REACT COMPONENTS =====
     │   ├── 📄 Header.tsx                  # Thanh header: Logo, tên hệ thống, trạng thái
     │   ├── 📄 InputPanel.tsx              # Panel nhập liệu: Upload ảnh, form dữ liệu lâm sàng
-    │   └── 📄 ResultsPanel.tsx            # Panel kết quả: Ảnh annotated + Báo cáo Markdown
+    │   └── 📄 ResultsPanel.tsx            # Panel kết quả: Ảnh annotated (Grad-CAM) + Báo cáo Markdown
     │
     └── 📦 services/                       # ===== API SERVICE LAYER =====
         └── 📄 geminiService.ts            # HTTP Client gọi Backend API (POST /analyze)
@@ -266,11 +254,11 @@ Multimodal_AI/
 | Folder | Chức năng |
 |---|---|
 | `backend/` | Toàn bộ server-side: API Gateway, AI Pipeline, Logic nghiệp vụ y khoa |
-| `backend/ai_engine/` | **Lõi AI**: Điều phối (Orchestrator), Vision Models, LLM Client, và hệ thống Multi-Agent |
-| `backend/ai_engine/agents/` | Chứa 3 Agent LLM chuyên biệt, mỗi Agent có vai trò y khoa riêng biệt |
+| `backend/ai_engine/` | **Lõi AI**: Điều phối (Orchestrator), Vision Models (U-Net, DenseNet, Grad-CAM), LLM Client, và Agent |
+| `backend/ai_engine/agents/` | Chứa ChiefDoctorAgent — Agent LLM duy nhất đóng vai Bác sĩ Trưởng khoa Hô hấp |
 | `backend/core/` | Domain logic thuần: DTO definitions và các hàm tính toán y khoa (CURB-65) |
-| `backend/utils/` | Các hàm tiện ích: xử lý ảnh (crop, mask, overlay) và format API response |
-| `backend/model_ai/` | Lưu trữ file trọng số (weights) của 3 mô hình AI đã được huấn luyện |
+| `backend/utils/` | Các hàm tiện ích: xử lý ảnh (crop, mask analysis) và format API response |
+| `backend/model_ai/` | Lưu trữ file trọng số (weights) của 2 mô hình AI đã được huấn luyện |
 | `frontend/` | Toàn bộ client-side: Giao diện React với TypeScript |
 | `frontend/components/` | Các React component tái sử dụng: Header, InputPanel, ResultsPanel |
 | `frontend/services/` | Tầng gọi API: Gửi FormData đến Backend, xử lý response |
@@ -319,12 +307,10 @@ app.add_middleware(
 | `GROQ_API_KEY` | Từ `.env` | API Key để gọi Groq Cloud (LLM Llama 3.3) |
 | `HOST` | `0.0.0.0` | Địa chỉ host của Backend server |
 | `PORT` | `8000` | Cổng chạy Backend server |
+| `BASE_DIR` | `__file__` directory | Đường dẫn gốc của backend |
 | `UNET_PATH` | `model_ai/best_lung_unet.pth` | Đường dẫn trọng số U-Net |
 | `DENSENET_PATH` | `model_ai/best_binary_xray_recall98.keras` | Đường dẫn trọng số DenseNet121 |
-| `YOLO_PATH` | `model_ai/best_RSNA_HIGH_LR.pt` | Đường dẫn trọng số YOLOv8 |
 | `PNEUMONIA_THRES_HIGH` | `80.0` | Ngưỡng xác suất viêm phổi cao |
-| `YOLO_CONF_HIGH` | `0.10` | Ngưỡng confidence YOLO khi xác suất viêm phổi cao |
-| `YOLO_CONF_LOW` | `0.20` | Ngưỡng confidence YOLO khi xác suất viêm phổi thấp |
 
 ---
 
@@ -332,7 +318,7 @@ app.add_middleware(
 
 **File**: `backend/ai_engine/vision_models.py`
 
-**Vai trò**: Lớp trung tâm quản lý việc load và chạy inference cho cả 3 mô hình Deep Learning.
+**Vai trò**: Lớp trung tâm quản lý việc load và chạy inference cho U-Net (Segmentation), DenseNet121 (Classification), và Grad-CAM (Visualization).
 
 #### 5.3.1. Phân Vùng Phổi — `predict_mask()`
 
@@ -342,7 +328,7 @@ Input: PIL.Image (bất kỳ kích thước)
   → Chuẩn hóa [0, 1]
   → Transpose (H,W,C) → (C,H,W)
   → Thêm batch dimension
-  → U-Net inference
+  → U-Net inference (PyTorch)
   → Sigmoid → Threshold (0.5) → Binary Mask
   → Resize mask về kích thước gốc
 Output: np.ndarray (binary mask, 0/255)
@@ -357,25 +343,34 @@ Output: np.ndarray (binary mask, 0/255)
 ```
 Input: PIL.Image (đã được crop hoặc ảnh gốc)
   → Resize về 224×224
-  → Chuẩn hóa [0, 1]
+  → DenseNet preprocess_input()
   → Thêm batch dimension
   → DenseNet121 inference (Keras)
 Output: float (0-100, đơn vị %)
 ```
 
-**Lưu ý**: Hàm xử lý cả hai trường hợp output shape: `(1, 1)` (binary) và `(1, 2)` (softmax 2 class).
+#### 5.3.3. Trực Quan Hóa — `generate_gradcam_heatmap()`
 
-#### 5.3.3. Phát Hiện Đám Mờ — `detect_abnormalities()`
+**Grad-CAM (Gradient-weighted Class Activation Mapping)** được sử dụng để tạo bản đồ nhiệt trực quan hóa vùng ảnh mà DenseNet121 quan tâm khi đưa ra quyết định phân loại.
 
 ```
-Input: PIL.Image (ảnh gốc), conf_threshold (float)
-  → YOLO.predict(image, conf=threshold, iou=0.45)
-Output: List[Dict{box, conf, label, mode}]
+Input: PIL.Image
+  → Resize 224×224, DenseNet preprocess
+  → Forward pass qua conv_model (tới lớp conv5_block16_concat)
+  → GradientTape: tính gradient output/conv_outputs
+  → Pooled gradients → Weighted combination
+  → ReLU → Normalize [0, 1]
+Output: np.ndarray (heatmap 7×7, giá trị [0, 1])
 ```
 
-**Adaptive Confidence Threshold (Ngưỡng động):**
-- Khi `pneumonia_prob > 80%` → `conf_threshold = 0.10` (nhạy hơn, phát hiện nhiều vùng nhỏ).
-- Khi `pneumonia_prob ≤ 80%` → `conf_threshold = 0.25` (giảm nhiễu, chỉ phát hiện vùng rõ ràng).
+**Xử lý trong Orchestrator:**
+- Heatmap được resize về kích thước ảnh gốc.
+- Áp dụng JET colormap (`cv2.COLORMAP_JET`) → tạo heatmap màu.
+- Overlay lên ảnh gốc với `alpha = 0.4` bằng `cv2.addWeighted()`.
+
+**Khởi tạo sub-models cho Grad-CAM (`_init_gradcam_models`):**
+- `conv_model`: Trích xuất feature maps từ `densenet121.conv5_block16_concat`.
+- `classifier_model`: Các lớp phía sau (GlobalAveragePooling → BatchNorm → Dense → Dropout → Sigmoid).
 
 ---
 
@@ -383,7 +378,7 @@ Output: List[Dict{box, conf, label, mode}]
 
 **File**: `backend/ai_engine/orchestrator.py`
 
-**Vai trò**: **Thành phần quan trọng nhất** của hệ thống. Điều phối toàn bộ luồng xử lý từ Vision Pipeline → Medical Calculation → Multi-Agent LLM → Final Response.
+**Vai trò**: **Thành phần quan trọng nhất** của hệ thống. Điều phối toàn bộ luồng xử lý từ Vision Pipeline → Medical Calculation → LLM Agent → Final Response.
 
 **Luồng xử lý chi tiết trong `analyze_patient()`:**
 
@@ -393,15 +388,11 @@ Output: List[Dict{box, conf, label, mode}]
 | 2 | Kiểm tra chất lượng mask (`mask_ratio`, `blobs`) | `image_processing` utils |
 | 3 | Crop vùng phổi (hoặc FALLBACK) | `crop_lung_region()` |
 | 4 | Phân loại xác suất viêm phổi | `VisionEngine.predict_pneumonia_prob()` |
-| 5 | Xác định ngưỡng YOLO động | Logic nội bộ |
-| 6 | Phát hiện vùng bất thường | `VisionEngine.detect_abnormalities()` |
-| 7 | Xác định vị trí giải phẫu cho mỗi detection | `get_lesion_location_text()` |
-| 8 | Vẽ overlay (mask + bounding boxes) lên ảnh gốc | OpenCV (`cv2`) |
-| 9 | Agent Radiologist phân tích hình ảnh | `RadiologistAgent.analyze()` |
-| 10 | Tính điểm CURB-65/CRB-65 | `calculate_curb65()` |
-| 11 | Agent Lab Specialist phân tích xét nghiệm | `LabSpecialistAgent.analyze()` |
-| 12 | Agent Chief Doctor tổng hợp báo cáo | `ChiefDoctorAgent.conclude()` |
-| 13 | Đóng gói `FinalResponseDTO` | Nội bộ |
+| 5 | Tạo Grad-CAM heatmap | `VisionEngine.generate_gradcam_heatmap()` |
+| 6 | Overlay heatmap (JET, alpha=0.4) lên ảnh | OpenCV (`cv2.addWeighted`) |
+| 7 | Tính điểm CURB-65/CRB-65 | `calculate_curb65()` |
+| 8 | ChiefDoctorAgent tổng hợp báo cáo | `ChiefDoctorAgent.conclude()` |
+| 9 | Đóng gói `FinalResponseDTO` | Nội bộ |
 
 ---
 
@@ -430,14 +421,30 @@ User Input: <80 ký tự đầu>"
 
 **File**: `backend/ai_engine/prompts.py`
 
-Đây là thành phần định nghĩa "tâm trí" của mỗi Agent LLM. Mỗi prompt tuân thủ nguyên tắc:
+Đây là thành phần định nghĩa "tâm trí" của ChiefDoctorAgent. Prompt duy nhất (`CHIEF_DOCTOR_SYSTEM_PROMPT`) tuân thủ nguyên tắc:
 
 | Nguyên tắc | Mô tả |
 |---|---|
-| **Controlled Vocabulary** | Mỗi Agent chỉ được phép sử dụng danh sách từ vựng được định nghĩa trước |
-| **Locked Output Format** | Định dạng đầu ra khóa cứng, không cho phép Agent tự ý thêm/bớt trường |
+| **Locked Output Format** | Định dạng đầu ra khóa cứng 3 mục: Phân tích Lâm sàng, Nhận định tổng hợp, Giải thích chuyên môn |
 | **No Self-Reasoning** | Agent không được tự suy luận ngoài dữ liệu đầu vào |
-| **Vietnamese Medical Terminology** | Toàn bộ prompt và output bằng tiếng Việt y khoa chuẩn |
+| **No Data Fabrication** | Không tự tạo thêm dữ liệu y tế hoặc suy đoán triệu chứng mới |
+| **Vietnamese Medical Terminology** | Toàn bộ output bằng tiếng Việt y khoa chuẩn |
+| **CURB-65 Rules** | Sử dụng quy tắc phân tầng: 0–1 Thấp, 2 Trung bình, ≥3 Cao |
+
+**Format output bắt buộc:**
+```markdown
+## 1. Phân tích Lâm sàng & Cận lâm sàng
+- **Sinh hiệu & Xét nghiệm:** {tóm tắt các bất thường}
+- **Đánh giá Ảnh X-quang:** Khả năng viêm phổi là {densenet_prob}%
+- **Thang điểm {curb_type}:** {curb_score} điểm
+
+## 2. Nhận định tổng hợp
+- **Mức độ nguy cơ:** {Thấp / Trung bình / Cao}
+- **Định hướng xử trí:** {Theo dõi ngoại trú / Theo dõi sát / Nhập viện khẩn cấp}
+
+## 3. Giải thích chuyên môn
+{Giải thích logic lâm sàng giữa AI, CURB-65/CRB-65 và dấu hiệu bệnh nhân.}
+```
 
 ---
 
@@ -465,8 +472,8 @@ Thực hiện tính điểm **CURB-65** hoặc **CRB-65** dựa trên 5 tiêu ch
 | Điểm | Mức độ | Định hướng xử trí |
 |---|---|---|
 | 0–1 | Thấp | Theo dõi ngoại trú |
-| 2 | Trung bình | Theo dõi sát |
-| ≥ 3 | Cao | Nhập viện |
+| 2 | Trung bình | Theo dõi sát hoặc nhập viện |
+| ≥ 3 | Cao | Nhập viện khẩn cấp |
 
 ---
 
@@ -479,24 +486,11 @@ Thực hiện tính điểm **CURB-65** hoặc **CRB-65** dựa trên 5 tiêu ch
 | `calculate_mask_area_ratio(mask)` | Tính tỷ lệ pixel phổi so với tổng ảnh. Dùng để kiểm tra chất lượng mask U-Net |
 | `count_blobs(mask)` | Đếm số vùng liên thông (connected components). Phổi bình thường có 2 blobs (phổi trái + phải) |
 | `crop_lung_region(image, mask)` | Cắt ảnh theo bounding box của mask phổi |
-| `draw_bounding_boxes(image, detections)` | Vẽ bounding boxes lên ảnh PIL |
-| `get_lesion_location_text(bbox, lung_mask)` | **Xác định vị trí giải phẫu**: Phổi trái/phải, Thùy trên/giữa/dưới |
+| `draw_bounding_boxes(image, detections)` | Vẽ bounding boxes lên ảnh PIL (tiện ích dự phòng) |
+| `get_lesion_location_text(bbox, lung_mask)` | Xác định vị trí giải phẫu: Phổi trái/phải, Thùy trên/giữa/dưới (tiện ích dự phòng) |
 | `preprocess_for_unet(image)` | Tiền xử lý ảnh cho U-Net |
 
-**Chi tiết hàm `get_lesion_location_text()` — Xác định vị trí giải phẫu:**
-
-```
-1. Chia ảnh thành 2 nửa theo trục X (giữa ảnh):
-   - bbox_center_x < mid_x → "Phổi Phải"
-   - bbox_center_x >= mid_x → "Phổi Trái"
-
-2. Tính tỷ lệ phủ (coverage_ratio):
-   - > 50% → "Toàn bộ" phổi bên đó
-
-3. Xác định thùy phổi dựa trên vị trí Y tương đối:
-   - Phổi Phải: <35% → Thùy Trên | 35-65% → Thùy Giữa | >65% → Thùy Dưới
-   - Phổi Trái:  <50% → Thùy Trên | >=50% → Thùy Dưới
-```
+> **Lưu ý**: Các hàm `draw_bounding_boxes()` và `get_lesion_location_text()` hiện không được gọi trong pipeline chính (Orchestrator), nhưng vẫn được giữ lại làm tiện ích dự phòng.
 
 ---
 
@@ -518,7 +512,7 @@ Chuyển đổi `FinalResponseDTO` thành JSON response phù hợp cho Frontend:
 | `confidence` | `float` | Xác suất viêm phổi (0-100%) |
 | `location` | `string` | Vị trí tổn thương giải phẫu |
 | `fullReport` | `string` | Báo cáo y khoa đầy đủ (Markdown) |
-| `annotatedImage` | `string` | Ảnh X-quang đã annotated (Base64 Data URL) |
+| `annotatedImage` | `string` | Ảnh X-quang đã annotated với Grad-CAM heatmap (Base64 Data URL) |
 
 ---
 
@@ -538,10 +532,10 @@ Chuyển đổi `FinalResponseDTO` thành JSON response phù hợp cho Frontend:
 #### 5.10.2. `InputPanel.tsx` — Panel Nhập Liệu
 
 Gồm 3 section chính:
-1. **Upload Ảnh X-Quang**: Hỗ trợ Drag & Drop, preview ảnh, xóa ảnh. Chấp nhận DICOM/JPEG/PNG.
+1. **Upload Ảnh X-Quang**: Hỗ trợ click để chọn file, preview ảnh, xóa ảnh. Chấp nhận JPEG/PNG.
 2. **Form Dữ Liệu Lâm Sàng**:
    - *Sinh hiệu*: Tuổi, Nhiệt độ (°C), Huyết áp (mmHg), Nhịp thở (/phút).
-   - *Trạng thái*: Mất định hướng / Lú lẫn (Toggle Yes/No).
+   - *Trạng thái*: Mất định hướng / Lú lẫn (Toggle Có/Không).
    - *Xét nghiệm*: WBC Count, CRP, SpO2 (%), Urea (mmol/L).
    - *Ghi chú lâm sàng*: Textarea cho bệnh sử / triệu chứng.
 3. **Nút Phân Tích & Chẩn Đoán**: Gửi FormData đến Backend.
@@ -549,7 +543,7 @@ Gồm 3 section chính:
 #### 5.10.3. `ResultsPanel.tsx` — Panel Kết Quả
 
 Hai tab hiển thị:
-- **Tab "Phân Tích Hình Ảnh"**: Hiển thị ảnh X-quang đã được annotated (mask + bounding boxes), kèm thông tin vị trí tổn thương và độ tin cậy.
+- **Tab "Phân Tích Hình Ảnh"**: Hiển thị ảnh X-quang đã được annotated bằng Grad-CAM heatmap, kèm thông tin vị trí tổn thương và độ tin cậy.
 - **Tab "Báo Cáo Y Khoa"**: Render báo cáo Markdown đầy đủ từ `ChiefDoctorAgent` với `ReactMarkdown` + `remarkGfm`.
 
 #### 5.10.4. `geminiService.ts` — API Service Layer
@@ -576,17 +570,17 @@ Hệ thống không sử dụng cơ sở dữ liệu truyền thống (SQL/NoSQL
 @dataclass
 class PatientDataDTO:
     xray_image: Any              # Ảnh X-quang (PIL.Image)
-    age: Optional[int]           # Tuổi bệnh nhân
-    gender: Optional[str]        # Giới tính
+    age: Optional[int] = None    # Tuổi bệnh nhân
+    gender: Optional[str] = None # Giới tính
     confusion: bool = False      # Mất định hướng / Lú lẫn (C trong CURB-65)
-    urea: Optional[float]        # Urea (mmol/L) — U trong CURB-65
-    respiratory_rate: Optional[int]  # Nhịp thở (/phút) — R trong CURB-65
-    bp_systolic: Optional[int]   # Huyết áp tâm thu (mmHg) — B trong CURB-65
-    bp_diastolic: Optional[int]  # Huyết áp tâm trương (mmHg)
-    wbc: Optional[float]         # Bạch cầu (G/L)
-    crp: Optional[float]         # C-Reactive Protein (mg/L)
-    spo2: Optional[float]        # Độ bão hòa Oxy (%)
-    temperature: Optional[float] # Nhiệt độ cơ thể (°C)
+    urea: Optional[float] = None # Urea (mmol/L) — U trong CURB-65
+    respiratory_rate: Optional[int] = None  # Nhịp thở (/phút) — R trong CURB-65
+    bp_systolic: Optional[int] = None   # Huyết áp tâm thu (mmHg) — B trong CURB-65
+    bp_diastolic: Optional[int] = None  # Huyết áp tâm trương (mmHg)
+    wbc: Optional[float] = None         # Bạch cầu (G/L)
+    crp: Optional[float] = None         # C-Reactive Protein (mg/L)
+    spo2: Optional[float] = None        # Độ bão hòa Oxy (%)
+    temperature: Optional[float] = None # Nhiệt độ cơ thể (°C)
     doctor_note: str = ""        # Ghi chú lâm sàng
 ```
 
@@ -597,12 +591,10 @@ class PatientDataDTO:
 class AnalysisResultDTO:
     unet_status: str             # "SUCCESS" | "FALLBACK"
     densenet_prob: float         # Xác suất viêm phổi (0-100%)
-    yolo_detections: List[Any]   # Danh sách bounding boxes
-    annotated_image: Any         # Ảnh đã vẽ overlay (PIL.Image)
+    annotated_image: Any         # Ảnh đã overlay Grad-CAM heatmap (PIL.Image)
     curb65_score: int            # Điểm CURB-65 / CRB-65
     curb65_type: str             # "CURB-65" | "CRB-65"
-    lung_mask: Optional[Any]     # Mask phổi từ U-Net
-    location_text: str           # Vị trí giải phẫu ("Phổi Phải - Thùy Dưới")
+    lung_mask: Optional[Any] = None  # Mask phổi từ U-Net
 ```
 
 ### 6.3. `FinalResponseDTO` — Response Cuối Cùng
@@ -636,10 +628,12 @@ class FinalResponseDTO:
         ┌────────────────┼────────────────┐
         ▼                ▼                ▼
    ┌─────────┐    ┌──────────┐    ┌────────────┐
-   │ VisionE  │    │ medical  │    │  Agents    │
-   │ Engine   │    │  calc    │    │  (LLM)     │
-   └────┬─────┘    └────┬─────┘    └─────┬──────┘
-        │               │               │
+   │ VisionE  │    │ medical  │    │  ChiefDoc  │
+   │ Engine   │    │  calc    │    │  Agent     │
+   │ (U-Net   │    │ (CURB65) │    │  (LLM)     │
+   │ DenseNet │    └────┬─────┘    └─────┬──────┘
+   │ GradCAM) │         │               │
+   └────┬─────┘         │               │
         └───────────────┼───────────────┘
                         ▼
                ┌─────────────────┐
@@ -664,7 +658,7 @@ class FinalResponseDTO:
 | **Node.js** | 18+ |
 | **RAM** | ≥ 8 GB (khuyến nghị 16 GB) |
 | **GPU** | Không bắt buộc (CPU inference khả dụng, GPU CUDA giúp tăng tốc) |
-| **Dung lượng đĩa** | ~ 200 MB (model files) + 1 GB (dependencies) |
+| **Dung lượng đĩa** | ~ 130 MB (model files) + 1 GB (dependencies) |
 | **Groq API Key** | **Bắt buộc** để sử dụng LLM (đăng ký miễn phí tại [console.groq.com](https://console.groq.com)) |
 
 ### 7.2. Cài Đặt Backend
@@ -708,7 +702,6 @@ PORT=8000
 # (Mặc định: model_ai/<tên_file>)
 # UNET_PATH=model_ai/best_lung_unet.pth
 # DENSENET_PATH=model_ai/best_binary_xray_recall98.keras
-# YOLO_PATH=model_ai/best_RSNA_HIGH_LR.pt
 ```
 
 > ⚠️ **Lưu ý**: File `.env` chứa thông tin nhạy cảm (API Key). **KHÔNG** được commit lên Git. File `.gitignore` đã được cấu hình loại trừ file này.
@@ -722,9 +715,9 @@ python main.py
 
 **Output mong đợi:**
 ```
-✅ U-Net loaded successfully from model_ai/best_lung_unet.pth
-✅ DenseNet loaded successfully from model_ai/best_binary_xray_recall98.keras
-✅ YOLO loaded successfully from model_ai/best_RSNA_HIGH_LR.pt
+U-Net loaded successfully from model_ai/best_lung_unet.pth
+DenseNet loaded successfully from model_ai/best_binary_xray_recall98.keras
+GradCAM sub-models initialized successfully
 INFO:     Started server process [xxxxx]
 INFO:     Uvicorn running on http://0.0.0.0:8000
 ```
@@ -744,7 +737,7 @@ npm install
 npm run dev
 ```
 
-> Ứng dụng sẵn sàng tại: **http://localhost:3000** (hoặc port 5173 nếu cấu hình khác)
+> Ứng dụng sẵn sàng tại: **http://localhost:3000**
 
 ### 7.6. Kiểm Tra Kết Nối
 
@@ -767,20 +760,19 @@ npm run dev
 ### Bước 2: Phân Tích
 
 Nhấn nút **"PHÂN TÍCH & CHẨN ĐOÁN"**. Hệ thống sẽ tự động:
-- Phân vùng phổi và loại bỏ nhiễu.
-- Tính xác suất viêm phổi.
-- Phát hiện và khoanh vùng tổn thương.
-- Xác định vị trí giải phẫu.
+- Phân vùng phổi và cắt vùng quan tâm.
+- Tính xác suất viêm phổi bằng DenseNet121.
+- Tạo bản đồ nhiệt Grad-CAM trực quan hóa vùng AI quan tâm.
 - Tính điểm CURB-65/CRB-65.
-- Sinh báo cáo y khoa tổng hợp.
+- Sinh báo cáo y khoa tổng hợp bằng LLM.
 
 ### Bước 3: Xem Kết Quả
 
-- **Tab "Phân Tích Hình Ảnh"**: Ảnh X-quang với overlay mask phổi (xanh lá) và bounding boxes (xanh lá/vàng), kèm vị trí tổn thương và độ tin cậy.
-- **Tab "Báo Cáo Y Khoa"**: Báo cáo hội chẩn tự động gồm:
-  - Mô tả hình ảnh học (vị trí, thùy phổi).
-  - Bảng đánh giá xét nghiệm (WBC, CRP, SpO2, Urea).
+- **Tab "Phân Tích Hình Ảnh"**: Ảnh X-quang với overlay Grad-CAM heatmap (bản đồ nhiệt JET), kèm vị trí tổn thương và độ tin cậy (%).
+- **Tab "Báo Cáo Y Khoa"**: Báo cáo tự động từ ChiefDoctorAgent gồm:
+  - Phân tích lâm sàng & cận lâm sàng (sinh hiệu, xét nghiệm, X-quang).
   - Nhận định tổng hợp: Mức độ nguy cơ và định hướng xử trí.
+  - Giải thích chuyên môn: Logic lâm sàng giữa AI, CURB-65 và dấu hiệu bệnh nhân.
 
 ---
 
@@ -791,4 +783,3 @@ Nhấn nút **"PHÂN TÍCH & CHẨN ĐOÁN"**. Hệ thống sẽ tự động:
 *Hệ thống này chỉ mang tính chất hỗ trợ. Mọi quyết định lâm sàng cuối cùng đều thuộc về bác sĩ điều trị.*
 
 </div>
-
