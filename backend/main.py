@@ -10,7 +10,7 @@ from utils.response_helper import format_ui_response
 import config
 import uvicorn
 
-app = FastAPI()
+app = FastAPI(title="PneumoScanAI API")
 
 app.add_middleware(
     CORSMiddleware,
@@ -21,6 +21,10 @@ app.add_middleware(
 )
 
 orchestrator = MedicalOrchestrator()
+
+@app.get("/")
+def health_check():
+    return {"status": "ok", "message": "PneumoScanAI API đang chạy!"}
 
 @app.post("/analyze")
 async def analyze(
