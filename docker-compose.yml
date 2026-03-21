@@ -1,0 +1,45 @@
+# ==========================================
+# PneumoScanAI - Docker Compose
+# ==========================================
+# Sử dụng: docker compose up --build
+# ==========================================
+
+services:
+  # ===== BACKEND: FastAPI + AI Models =====
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: pneumoscan-backend
+    ports:
+      - "8000:8000"
+    environment:
+      - PORT=8000
+      - HOST=0.0.0.0
+      - GROQ_API_KEY=${GROQ_API_KEY}
+    volumes:
+      # Mount model files để không cần rebuild khi đổi model
+      - ./backend/model_ai:/app/model_ai
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # ===== FRONTEND: React + Vite (Nginx) =====
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        # Khi chạy trong Docker, frontend gọi API qua proxy Nginx
+        # nên không cần URL đầy đủ, chỉ cần relative path
+        VITE_API_URL: ""
+    container_name: pneumoscan-frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    restart: unless-stopped

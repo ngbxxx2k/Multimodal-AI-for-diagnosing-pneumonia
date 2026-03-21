@@ -1,5 +1,5 @@
 # ==========================================
-# PneumoScanAI - Hugging Face Spaces
+# PneumoScanAI Backend - FastAPI + AI Models
 # ==========================================
 FROM python:3.10-slim
 
@@ -11,23 +11,18 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libxrender-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# Tạo user non-root (yêu cầu bảo mật của HF Spaces)
-RUN useradd -m -u 1000 user
-USER user
-ENV PATH="/home/user/.local/bin:$PATH"
-
 WORKDIR /app
 
 # Copy requirements trước để tận dụng Docker cache
-COPY --chown=user requirements.txt .
+COPY requirements.txt .
 RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir -r requirements.txt
 
 # Copy toàn bộ code vào container
-COPY --chown=user . .
+COPY . .
 
-# Mở port 7860 (yêu cầu của Hugging Face Spaces)
-EXPOSE 7860
+# Mở port 8000
+EXPOSE 8000
 
 # Chạy FastAPI bằng Uvicorn
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "7860"]
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]

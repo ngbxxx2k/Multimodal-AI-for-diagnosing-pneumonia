@@ -7,7 +7,7 @@ GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 
 
 HOST = os.getenv("HOST", "0.0.0.0")
-PORT = int(os.getenv("PORT", 7860))
+PORT = int(os.getenv("PORT", 8000))
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 

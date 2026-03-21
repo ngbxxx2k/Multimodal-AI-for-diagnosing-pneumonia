@@ -29,6 +29,7 @@
 | 6 | [Thiết Kế Dữ Liệu (DTO)](#6--thiết-kế-dữ-liệu-dto--data-transfer-objects) | Cấu trúc các Data Transfer Objects |
 | 7 | [Hướng Dẫn Cài Đặt & Chạy](#7--hướng-dẫn-cài-đặt--chạy-ứng-dụng) | Các bước cấu hình môi trường và khởi chạy |
 | 8 | [Hướng Dẫn Sử Dụng](#8--hướng-dẫn-sử-dụng) | Quy trình thao tác trên giao diện |
+| 9 | [Demo Trực Tuyến](#9--demo-trực-tuyến) | Link ứng dụng đã triển khai |
 
 ---
 
@@ -202,12 +203,16 @@ Multimodal_AI/
 │
 ├── 📄 README.md                          # Tài liệu phân tích kỹ thuật (file này)
 ├── 📄 .gitignore                         # Cấu hình loại trừ file khỏi Git
+├── 🐳 docker-compose.yml                # Docker Compose: khởi chạy toàn bộ hệ thống
+├── 📄 .env.example                       # File .env mẫu cho Docker Compose
 │
 ├── 🔧 backend/                           # ===== BACKEND (Python / FastAPI) =====
 │   ├── 📄 main.py                        # Entry point: Khởi tạo FastAPI app, định nghĩa API endpoint
 │   ├── 📄 config.py                      # Cấu hình toàn cục: đường dẫn model, ngưỡng, biến môi trường
 │   ├── 📄 requirements.txt               # Danh sách thư viện Python cần cài đặt
 │   ├── 📄 .env                           # Biến môi trường (GROQ_API_KEY, PORT, HOST)
+│   ├── 🐳 Dockerfile                     # Docker image cho Backend
+│   ├── 📄 .dockerignore                  # Loại trừ file khỏi Docker build context
 │   │
 │   ├── 🧠 ai_engine/                     # ===== CORE AI ENGINE =====
 │   │   ├── 📄 orchestrator.py            # 🎯 Trung tâm điều phối: Gọi Vision → Agent → Response
@@ -239,6 +244,9 @@ Multimodal_AI/
     ├── 📄 package.json                    # Dependencies & Scripts (npm)
     ├── 📄 tsconfig.json                   # Cấu hình TypeScript compiler
     ├── 📄 vite.config.ts                  # Cấu hình Vite (dev server port 3000, alias)
+    ├── 🐳 Dockerfile                      # Docker image cho Frontend (multi-stage: build + Nginx)
+    ├── 📄 nginx.conf                      # Cấu hình Nginx (SPA routing, reverse proxy API)
+    ├── 📄 .dockerignore                   # Loại trừ file khỏi Docker build context
     │
     ├── 📦 components/                     # ===== REACT COMPONENTS =====
     │   ├── 📄 Header.tsx                  # Thanh header: Logo, tên hệ thống, trạng thái
@@ -656,12 +664,95 @@ class FinalResponseDTO:
 |---|---|
 | **Python** | 3.9+ |
 | **Node.js** | 18+ |
+| **Docker** | 20.10+ (nếu chạy bằng Docker) |
+| **Docker Compose** | v2.0+ (nếu chạy bằng Docker) |
 | **RAM** | ≥ 8 GB (khuyến nghị 16 GB) |
 | **GPU** | Không bắt buộc (CPU inference khả dụng, GPU CUDA giúp tăng tốc) |
 | **Dung lượng đĩa** | ~ 130 MB (model files) + 1 GB (dependencies) |
 | **Groq API Key** | **Bắt buộc** để sử dụng LLM (đăng ký miễn phí tại [console.groq.com](https://console.groq.com)) |
 
-### 7.2. Cài Đặt Backend
+---
+
+### 🐳 Cách 1: Chạy bằng Docker Compose (Khuyến nghị)
+
+Đây là cách **đơn giản nhất** để khởi chạy toàn bộ hệ thống chỉ với 2 lệnh.
+
+#### Bước 1: Cấu hình biến môi trường
+
+Tạo file `.env` tại **thư mục gốc** của project (cùng cấp với `docker-compose.yml`):
+
+```ini
+# [BẮT BUỘC] API Key cho Groq Cloud (LLM Llama 3.3 70B)
+# Đăng ký tại: https://console.groq.com
+GROQ_API_KEY=gsk_your_groq_api_key_here
+```
+
+> 💡 **Mẹo**: Copy file `.env.example` thành `.env` và thay thế giá trị API Key.
+
+#### Bước 2: Build và khởi chạy
+
+```bash
+# Build và chạy toàn bộ hệ thống
+docker compose up --build
+```
+
+#### Bước 3: Truy cập ứng dụng
+
+| Service | URL | Mô tả |
+|---|---|---|
+| **Frontend** | http://localhost:3000 | Giao diện người dùng |
+| **Backend API** | http://localhost:8000 | FastAPI + AI Models |
+| **API Docs** | http://localhost:8000/docs | Swagger UI (tự động) |
+
+#### Các lệnh Docker hữu ích
+
+```bash
+# Chạy ở chế độ nền (detached)
+docker compose up --build -d
+
+# Xem logs
+docker compose logs -f
+
+# Xem logs của từng service
+docker compose logs -f backend
+docker compose logs -f frontend
+
+# Dừng hệ thống
+docker compose down
+
+# Dừng và xóa volumes
+docker compose down -v
+
+# Rebuild một service cụ thể
+docker compose up --build backend
+```
+
+#### Kiến trúc Docker
+
+```
+┌─────────────────────────────────────────────────┐
+│              Docker Compose Network              │
+│                                                  │
+│  ┌──────────────────┐   ┌─────────────────────┐ │
+│  │  frontend (Nginx) │   │  backend (FastAPI)   │ │
+│  │   Port: 3000:80   │──▶│   Port: 8000:8000   │ │
+│  │                    │   │                     │ │
+│  │  - Serve React    │   │  - U-Net Model      │ │
+│  │  - Proxy /analyze │   │  - DenseNet121      │ │
+│  │    → backend:8000 │   │  - Grad-CAM         │ │
+│  │                    │   │  - Groq LLM         │ │
+│  └──────────────────┘   └─────────────────────┘ │
+│                                                  │
+└─────────────────────────────────────────────────┘
+```
+
+> ⚠️ **Lưu ý**: Lần build đầu tiên sẽ mất **10-20 phút** do cần tải PyTorch, TensorFlow và các dependencies nặng. Các lần build sau sẽ nhanh hơn nhờ Docker cache.
+
+---
+
+### 🖥️ Cách 2: Chạy thủ công (Manual)
+
+#### 7.2. Cài Đặt Backend
 
 ```bash
 # 1. Di chuyển vào thư mục backend
@@ -681,7 +772,7 @@ source venv/bin/activate        # macOS / Linux
 pip install -r requirements.txt
 ```
 
-### 7.3. Cấu Hình File `.env`
+#### 7.3. Cấu Hình File `.env`
 
 Tạo file `.env` trong thư mục `backend/` với nội dung:
 
@@ -706,7 +797,7 @@ PORT=8000
 
 > ⚠️ **Lưu ý**: File `.env` chứa thông tin nhạy cảm (API Key). **KHÔNG** được commit lên Git. File `.gitignore` đã được cấu hình loại trừ file này.
 
-### 7.4. Khởi Chạy Backend Server
+#### 7.4. Khởi Chạy Backend Server
 
 ```bash
 # Từ thư mục backend/ (đã kích hoạt venv)
@@ -724,7 +815,7 @@ INFO:     Uvicorn running on http://0.0.0.0:8000
 
 > Server sẵn sàng tại: **http://localhost:8000**
 
-### 7.5. Cài Đặt & Chạy Frontend
+#### 7.5. Cài Đặt & Chạy Frontend
 
 ```bash
 # 1. Di chuyển vào thư mục frontend
@@ -739,7 +830,7 @@ npm run dev
 
 > Ứng dụng sẵn sàng tại: **http://localhost:3000**
 
-### 7.6. Kiểm Tra Kết Nối
+#### 7.6. Kiểm Tra Kết Nối
 
 1. Đảm bảo **Backend** đang chạy tại `http://localhost:8000`.
 2. Mở **Frontend** tại `http://localhost:3000`.
@@ -773,6 +864,18 @@ Nhấn nút **"PHÂN TÍCH & CHẨN ĐOÁN"**. Hệ thống sẽ tự động:
   - Phân tích lâm sàng & cận lâm sàng (sinh hiệu, xét nghiệm, X-quang).
   - Nhận định tổng hợp: Mức độ nguy cơ và định hướng xử trí.
   - Giải thích chuyên môn: Logic lâm sàng giữa AI, CURB-65 và dấu hiệu bệnh nhân.
+
+---
+
+## 9. 🌐 Demo Trực Tuyến
+
+Ứng dụng đã được triển khai và có thể truy cập trực tuyến tại:
+
+<div align="center">
+
+### 🔗 [https://pneumoscanai-one.vercel.app](https://pneumoscanai-one.vercel.app)
+
+</div>
 
 ---
 
