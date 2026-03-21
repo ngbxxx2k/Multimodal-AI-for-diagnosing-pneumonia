@@ -15,7 +15,8 @@ export async function generateAnalysis(data: ClinicalData, imageFile?: File): Pr
   }
 
   try {
-    const response = await fetch('http://localhost:8000/analyze', {
+    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+    const response = await fetch(`${API_URL}/analyze`, {
       method: 'POST',
       body: formData,
     });
