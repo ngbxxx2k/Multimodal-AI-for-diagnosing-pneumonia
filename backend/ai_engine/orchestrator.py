@@ -1,11 +1,9 @@
 from ai_engine.vision_models import VisionEngine
 from ai_engine.agents.chief_doctor import ChiefDoctorAgent
 
-from core.dtos import PatientDataDTO, AnalysisResultDTO, FinalResponseDTO
+from core.dtos import PatientDataDTO, FinalResponseDTO
 from core.medical_calc import calculate_curb65
 from utils.image_processing import calculate_mask_area_ratio, count_blobs, crop_lung_region
-import io
-import base64
 from PIL import Image
 import numpy as np
 import cv2

@@ -17,14 +17,6 @@ class PatientDataDTO:
     temperature: Optional[float] = None
     doctor_note: str = ""
 
-@dataclass
-class AnalysisResultDTO:
-    unet_status: str  
-    densenet_prob: float
-    annotated_image: Any 
-    curb65_score: int
-    curb65_type: str 
-    lung_mask: Optional[Any] = None 
 
 @dataclass
 class FinalResponseDTO:

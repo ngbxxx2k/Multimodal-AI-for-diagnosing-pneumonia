@@ -318,7 +318,6 @@ app.add_middleware(
 | `BASE_DIR` | `__file__` directory | Đường dẫn gốc của backend |
 | `UNET_PATH` | `model_ai/best_lung_unet.pth` | Đường dẫn trọng số U-Net |
 | `DENSENET_PATH` | `model_ai/best_binary_xray_recall98.keras` | Đường dẫn trọng số DenseNet121 |
-| `PNEUMONIA_THRES_HIGH` | `80.0` | Ngưỡng xác suất viêm phổi cao |
 
 ---
 
@@ -494,11 +493,6 @@ Thực hiện tính điểm **CURB-65** hoặc **CRB-65** dựa trên 5 tiêu ch
 | `calculate_mask_area_ratio(mask)` | Tính tỷ lệ pixel phổi so với tổng ảnh. Dùng để kiểm tra chất lượng mask U-Net |
 | `count_blobs(mask)` | Đếm số vùng liên thông (connected components). Phổi bình thường có 2 blobs (phổi trái + phải) |
 | `crop_lung_region(image, mask)` | Cắt ảnh theo bounding box của mask phổi |
-| `draw_bounding_boxes(image, detections)` | Vẽ bounding boxes lên ảnh PIL (tiện ích dự phòng) |
-| `get_lesion_location_text(bbox, lung_mask)` | Xác định vị trí giải phẫu: Phổi trái/phải, Thùy trên/giữa/dưới (tiện ích dự phòng) |
-| `preprocess_for_unet(image)` | Tiền xử lý ảnh cho U-Net |
-
-> **Lưu ý**: Các hàm `draw_bounding_boxes()` và `get_lesion_location_text()` hiện không được gọi trong pipeline chính (Orchestrator), nhưng vẫn được giữ lại làm tiện ích dự phòng.
 
 ---
 
@@ -592,20 +586,7 @@ class PatientDataDTO:
     doctor_note: str = ""        # Ghi chú lâm sàng
 ```
 
-### 6.2. `AnalysisResultDTO` — Kết Quả Phân Tích AI
-
-```python
-@dataclass
-class AnalysisResultDTO:
-    unet_status: str             # "SUCCESS" | "FALLBACK"
-    densenet_prob: float         # Xác suất viêm phổi (0-100%)
-    annotated_image: Any         # Ảnh đã overlay Grad-CAM heatmap (PIL.Image)
-    curb65_score: int            # Điểm CURB-65 / CRB-65
-    curb65_type: str             # "CURB-65" | "CRB-65"
-    lung_mask: Optional[Any] = None  # Mask phổi từ U-Net
-```
-
-### 6.3. `FinalResponseDTO` — Response Cuối Cùng
+### 6.2. `FinalResponseDTO` — Response Cuối Cùng
 
 ```python
 @dataclass
@@ -614,7 +595,7 @@ class FinalResponseDTO:
     report_markdown: str         # Báo cáo y khoa (Markdown) từ ChiefDoctorAgent
 ```
 
-### 6.4. Sơ Đồ Quan Hệ Giữa Các DTO
+### 6.3. Sơ Đồ Quan Hệ Giữa Các DTO
 
 ```
                   ┌──────────────┐

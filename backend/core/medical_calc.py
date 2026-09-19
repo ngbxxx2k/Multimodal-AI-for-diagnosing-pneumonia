@@ -1,4 +1,4 @@
-from .dtos import PatientDataDTO, AnalysisResultDTO
+from .dtos import PatientDataDTO
 from typing import Tuple
 
 def calculate_curb65(data: PatientDataDTO) -> Tuple[int, str]:

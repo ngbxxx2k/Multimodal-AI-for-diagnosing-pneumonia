@@ -39,7 +39,7 @@ def format_ui_response(patient_dto: PatientDataDTO, result: FinalResponseDTO):
         except:
             pass
             
-    location = getattr(result, 'location_text', 'Vùng không xác định')
+    location = 'Không xác định'
     
     confidence = getattr(result, 'pneumonia_prob', 0.0)
     
